@@ -1,10 +1,15 @@
    export default async (req, res) => {
-     // Adicione CORS
-     res.setHeader('Access-Control-Allow-Origin', '*');
-     res.setHeader('Access-Control-Allow-Methods', 'POST');
-     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  // Adicione CORS
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-     if (req.method !== 'POST') return res.status(405).end();
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+
+  if (req.method !== 'POST') return res.status(405).end();
 
      const { clientId, reseller } = req.body;
      const gitlabToken = 'glpat-wuCsKS0XQGmeiIcN_cFQj286MQp1OmlwMGI2Cw.01.120z5yk19';
