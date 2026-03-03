@@ -1,0 +1,10 @@
+{
+  "name": "will-proxy",
+  "version": "1.0.0",
+  "dependencies": {
+    "firebase": "^10.14.1"
+  },
+  "engines": {
+    "node": "18.x"
+  }
+}
