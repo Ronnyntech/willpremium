@@ -14,9 +14,18 @@ export default async function handler(req, res) {
     let allKeys = [];
 
     snapshot.forEach((tenantSnap) => {
-      const database = tenantSnap.child('database').val() || [];
+      const database = tenantSnap.child('database').val() || {};
+
+      // Se for array direto
       if (Array.isArray(database)) {
         database.forEach(keyObj => {
+          if (keyObj && keyObj.is_active === true) {
+            allKeys.push(keyObj);
+          }
+        });
+      } else {
+        // Se for objeto com keys "0", "1", etc. (como no seu banco)
+        Object.values(database).forEach(keyObj => {
           if (keyObj && keyObj.is_active === true) {
             allKeys.push(keyObj);
           }
