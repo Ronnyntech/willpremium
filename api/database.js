@@ -1,22 +1,23 @@
-import { initializeApp, cert } from 'firebase-admin/app';
-import { getDatabase } from 'firebase-admin/database';
+import { initializeApp } from 'firebase/app';
+import { getDatabase, ref, get } from 'firebase/database';
 
-const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-
-initializeApp({
-  credential: cert(serviceAccount),
+const firebaseConfig = {
   databaseURL: "https://will-painel-default-rtdb.firebaseio.com"
-});
+};
 
-const db = getDatabase();
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
 export default async function handler(req, res) {
+  res.setHeader('Content-Type', 'application/json');
+
   try {
-    const snapshot = await db.ref('tenants').once('value');
+    const snapshot = await get(ref(db, 'tenants'));
     let allKeys = [];
 
     snapshot.forEach((tenantSnap) => {
       const database = tenantSnap.child('database').val() || {};
+      // Lida com objeto { "0": {...}, "1": {...} } ou array
       Object.values(database).forEach(keyObj => {
         if (keyObj && keyObj.is_active === true) {
           allKeys.push(keyObj);
@@ -24,9 +25,9 @@ export default async function handler(req, res) {
       });
     });
 
-    res.status(200).json({ database: allKeys });
+    res.status(200).send(JSON.stringify({ database: allKeys }));
   } catch (error) {
-    console.error('Erro:', error);
-    res.status(500).json({ database: [] });
+    console.error('Erro:', error.message);
+    res.status(500).send(JSON.stringify({ database: [], error: error.message }));
   }
 }
